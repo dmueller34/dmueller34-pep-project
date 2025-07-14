@@ -16,17 +16,16 @@ public class AccountService {
     }
 
     public Account createAccount(Account account) {
-        Account acc = accountDAO.getAccount(account);
-        if (acc.getUsername() == null && 
+        if (accountDAO.getAccount(account) == null && 
         account.getPassword().length() >= 4 && 
-        account.getUsername().length() > 0) {
+        !account.getUsername().isBlank()) {
             return accountDAO.insertAccount(account);
         }
         return null;
     }
 
     public Account login(Account account) {
-        if (accountDAO.getAccount(account) != null) {
+        if (accountDAO.getAccount(account) == null) {
             return null;
         }
         return accountDAO.getAccount(account);

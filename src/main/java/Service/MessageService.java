@@ -20,7 +20,7 @@ public class MessageService {
     }
 
     public Message createMessage(Message message) {
-        if (message.getMessage_text().length() > 0 && 
+        if (!message.getMessage_text().isBlank() && 
         message.getMessage_text().length() < 255 &&
         accountDAO.getAccountByID(message.getPosted_by()) != null) {
             return messageDAO.insertMessage(message);
@@ -36,18 +36,23 @@ public class MessageService {
         return messageDAO.getMessageByID(id);
     }
 
-    public void deleteMessage(int id) {
+    public Message deleteMessage(int id) {
         if (getMessageByID(id) != null) {
+            Message message = getMessageByID(id);
             messageDAO.deleteMessage(id);
+            return message;
         }
+        return null;
     }
 
-    public void updateMessage(int id, Message message) {
+    public Message updateMessage(int id, Message message) {
         if (getMessageByID(id) != null && 
-        message.getMessage_text().length() > 0 && 
+        !message.getMessage_text().isBlank() && 
         message.getMessage_text().length() < 255) {
             messageDAO.updateMessage(id, message);
+            return messageDAO.getMessageByID(id);
         }
+        return null;
     }
 
     public List<Message> getAllMessagesFromUser(int id) {

@@ -1,5 +1,6 @@
 package DAO;
 
+import Model.Account;
 import Model.Message;
 import Util.ConnectionUtil;
 import java.sql.*;
@@ -12,12 +13,16 @@ public class MessageDAO {
         Connection conn = ConnectionUtil.getConnection();
         String sql = "insert into message (posted_by, message_text, time_posted_epoch) values (?, ?, ?)";
         try {
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, message.getPosted_by());
             ps.setString(2, message.getMessage_text());
             ps.setLong(3, message.getTime_posted_epoch());
             ps.executeUpdate();
-            return message;
+            ResultSet pkeyResultSet = ps.getGeneratedKeys();
+            if (pkeyResultSet.next()) {
+                int generated_account_id = pkeyResultSet.getInt(1);
+                return new Message(generated_account_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
